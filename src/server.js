@@ -17,7 +17,7 @@ const {
 } = require("./errorHandlers");
 
 const server = express();
-const whitelist = ["http://localhost:3000", "http://localhost:4000"];
+const whitelist = [process.env.FE_URL];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {

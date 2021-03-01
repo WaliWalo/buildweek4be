@@ -7,6 +7,7 @@ const {
   login,
   logout,
   googleAuthenticate,
+  refreshToken,
 } = require("../controllers/userControllers");
 const { authorize } = require("../controllers/authMiddleware");
 const passport = require("passport");
@@ -19,7 +20,7 @@ const routes = (app) => {
     .get(authorize, getUserById)
     .put(authorize, updateUser)
     .delete(authorize, deleteUser);
-
+  app.route("/refreshToken").get(refreshToken);
   app.route("/register").post(addNewUser);
   app.route("/login").post(login);
   app.route("/logout").post(authorize, logout);
