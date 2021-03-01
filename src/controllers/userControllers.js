@@ -155,6 +155,22 @@ const googleAuthenticate = async (req, res, next) => {
   }
 };
 
+const facebookAuthenticate = async (req, res, next) => {
+  try {
+    res.cookie("accessToken", req.user.tokens.token, {
+      httpOnly: true,
+    });
+    res.cookie("refreshToken", req.user.tokens.refreshToken, {
+      httpOnly: true,
+      path: "/users/refreshToken",
+    });
+
+    res.status(200).redirect(process.env.FE_URL);
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   getUsers,
   getUserById,
@@ -166,4 +182,5 @@ module.exports = {
   googleAuthenticate,
   refreshToken,
   getUser,
+  facebookAuthenticate,
 };

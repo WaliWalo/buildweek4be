@@ -9,6 +9,7 @@ const {
   googleAuthenticate,
   refreshToken,
   getUser,
+  facebookAuthenticate,
 } = require("../controllers/userControllers");
 const { authorize } = require("../controllers/authMiddleware");
 const passport = require("passport");
@@ -33,6 +34,17 @@ const routes = (app) => {
   app
     .route("/googleRedirect")
     .get(passport.authenticate("google"), googleAuthenticate);
+  app.route("/facebookLogin").get(
+    passport.authenticate("facebook", {
+      scope: "email",
+    })
+  );
+  app
+    .route("/facebookRedirect")
+    .get(
+      passport.authenticate("facebook", { failureRedirect: "/login" }),
+      facebookAuthenticate
+    );
 };
 
 module.exports = routes;

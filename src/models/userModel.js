@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const UserSchema = new Schema(
   {
     firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    lastName: { type: String },
     email: {
       type: String,
       trim: true,
@@ -19,6 +19,8 @@ const UserSchema = new Schema(
     following: [{ userId: { type: Schema.Types.ObjectId, ref: "User" } }],
     googleId: String,
     refreshTokens: [{ type: String }],
+    facebookId: String,
+    picture: { type: String },
   },
   { timestamps: true }
 );
