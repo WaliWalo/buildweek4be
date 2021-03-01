@@ -3,31 +3,29 @@ const CommentSchema = require("../models/commentModel");
 const Comment = mongoose.model("Comment", CommentSchema);
 const { authorize } = require("./authTools");
 
-const getParChilComments = async (req, res, next) => {
+//GET children comments
+const getMoreComments = async (req, res, next) => {
   try {
-    const parentComment = await Comment.findById(req.params.commentId);
-
-    const childrenComments = await Comment.find({
-      commentId: { $in: parentComment._id },
+    const moreComments = await Comment.find({
+      commentId: { $in: req.params.commentId },
+    }).populate({
+      path: "userId",
+      select: ["firstName", "lastName", "picture"],
     });
 
-    res.status(200).json({ data: "Comment successfully deleted" });
+    res.status(200).send(moreComments);
   } catch (err) {
-    console.log("Delete comment error", err);
+    console.log(err);
   }
 };
 
 //GET all of the comments (regardless if parent/children)
 const getComments = async (req, res, next) => {
   try {
-    const comments = await Comment.find();
-    /*     .populate([
-      {
-        path: "commentId",
-        select: ["content", "userId", "postId"],
-      },
-      { path: "userId", select: ["firstName", "lastName"] },
-    ]); */
+    const comments = await Comment.find().populate({
+      path: "userId",
+      select: ["firstName", "lastName", "picture"],
+    });
     res.send(comments);
   } catch (error) {
     console.log(error);
@@ -37,14 +35,10 @@ const getComments = async (req, res, next) => {
 
 //GET specific comment by Id regardless if parent/children
 const getCommentById = async (req, res, next) => {
-  const comment = await Comment.findById(req.params.commentId);
-  /*     .populate([
-    {
-      path: "commentId",
-      select: ["content", "userId", "postId"],
-    },
-    { path: "userId", select: ["firstName", "lastName"] },
-  ]); */
+  const comment = await Comment.findById(req.params.commentId).populate({
+    path: "userId",
+    select: ["firstName", "lastName", "picture"],
+  });
   console.log(comment);
   res.status(200).send(comment);
 };
@@ -54,9 +48,6 @@ const addNewComment = async (req, res, next) => {
   try {
     const newComment = new Comment(req.body);
     const { _id } = await newComment.save();
-    if (req.body.commentId) {
-      const parentComment = Comment.findById;
-    }
     res.status(201).send(newComment);
   } catch (error) {
     error.httpStatusCode = 400;
@@ -97,7 +88,7 @@ const deleteComment = async (req, res, next) => {
 };
 
 module.exports = {
-  getParChilComments,
+  getMoreComments,
   getComments,
   getCommentById,
   addNewComment,

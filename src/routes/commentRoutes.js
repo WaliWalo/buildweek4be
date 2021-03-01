@@ -1,5 +1,5 @@
 const {
-  getParChilComments,
+  getMoreComments,
   getComments,
   getCommentById,
   addNewComment,
@@ -13,10 +13,11 @@ const routes = (app) => {
 
   app
     .route("/comments/:commentId")
-    .get(getParChilComments)
     .get(getCommentById)
     .put(updateComment)
     .delete(deleteComment);
+
+  app.route("/comments/more/:commentId").get(getMoreComments);
 };
 
 module.exports = routes;
