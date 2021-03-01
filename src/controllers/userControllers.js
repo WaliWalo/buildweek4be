@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const UserSchema = require("../models/userModel");
 const User = mongoose.model("User", UserSchema);
 const { authenticate, refresh } = require("./authTools");
+const multer = require("multer");
+const cloudinary = require("./cloudinaryConfig");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const getUsers = async (req, res, next) => {
   const user = await User.find({});
@@ -23,6 +26,34 @@ const addNewUser = async (req, res, next) => {
   } catch (error) {
     error.httpStatusCode = 400;
     next(error);
+  }
+};
+
+const cloudStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "posts",
+  },
+});
+
+const cloudMulter = multer({ storage: cloudStorage });
+
+const postProfilePic = async (req, res, next) => {
+  try {
+    const addPic = await User.findByIdAndUpdate(req.user._id, {
+      $set: {
+        picture: req.files[0].path,
+      },
+    });
+    if (addPic) {
+      res.status(200).send(addPic);
+    } else {
+      const err = new Error(`User Id: ${req.user._id} not found`);
+      err.httpStatusCode = 404;
+      next(err);
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -183,4 +214,6 @@ module.exports = {
   refreshToken,
   getUser,
   facebookAuthenticate,
+  postProfilePic,
+  cloudMulter,
 };
