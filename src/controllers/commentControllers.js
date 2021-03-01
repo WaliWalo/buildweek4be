@@ -7,7 +7,7 @@ const { authorize } = require("./authTools");
 const getMoreComments = async (req, res, next) => {
   try {
     const moreComments = await Comment.find({
-      commentId: { $in: req.params.commentId },
+      subcomment: req.params.commentId,
     }).populate({
       path: "userId",
       select: ["firstName", "lastName", "picture"],
