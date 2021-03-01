@@ -10,6 +10,9 @@ const {
   refreshToken,
   getUser,
   facebookAuthenticate,
+  cloudMulter,
+  postProfilePic,
+  followUser,
 } = require("../controllers/userControllers");
 const { authorize } = require("../controllers/authMiddleware");
 const passport = require("passport");
@@ -22,7 +25,14 @@ const routes = (app) => {
     .put(authorize, updateUser)
     .delete(authorize, deleteUser);
 
-  app.route("/users/:userId").get(authorize, getUserById);
+  app
+    .route("/me/postProfilePic")
+    .post(authorize, cloudMulter.array("picture", 12), postProfilePic);
+
+  app
+    .route("/users/:userId")
+    .get(authorize, getUserById)
+    .post(authorize, followUser);
 
   app.route("/refreshToken").get(refreshToken);
   app.route("/register").post(addNewUser);

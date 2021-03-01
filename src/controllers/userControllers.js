@@ -2,6 +2,9 @@ const mongoose = require("mongoose");
 const UserSchema = require("../models/userModel");
 const User = mongoose.model("User", UserSchema);
 const { authenticate, refresh } = require("./authTools");
+const multer = require("multer");
+const cloudinary = require("./cloudinaryConfig");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const getUsers = async (req, res, next) => {
   const user = await User.find({});
@@ -26,6 +29,34 @@ const addNewUser = async (req, res, next) => {
   }
 };
 
+const cloudStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "posts",
+  },
+});
+
+const cloudMulter = multer({ storage: cloudStorage });
+
+const postProfilePic = async (req, res, next) => {
+  try {
+    const addPic = await User.findByIdAndUpdate(req.user._id, {
+      $set: {
+        picture: req.files[0].path,
+      },
+    });
+    if (addPic) {
+      res.status(200).send(addPic);
+    } else {
+      const err = new Error(`User Id: ${req.user._id} not found`);
+      err.httpStatusCode = 404;
+      next(err);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 const getUser = (req, res, next) => {
   try {
     res.send(req.user);
@@ -37,13 +68,64 @@ const getUser = (req, res, next) => {
 };
 
 const getUserById = async (req, res, next) => {
-  const user = await User.findById(req.params.userId);
-  if (user) {
-    res.status(200).send(user);
-  } else {
-    let error = new Error();
-    error.httpStatusCode = 404;
-    next(error);
+  try {
+    const user = await User.findById(req.params.userId);
+    if (user) {
+      res.status(200).send(user);
+    } else {
+      let error = new Error();
+      error.httpStatusCode = 404;
+      next(error);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const followUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      const findFollower = user.following.filter(
+        (follower) => follower.toString() === req.params.userId
+      );
+      console.log(findFollower);
+      if (findFollower.length > 0) {
+        const newFollowing = user.following.filter(
+          (follower) => follower.toString() !== req.params.userId
+        );
+        await User.findByIdAndUpdate(
+          req.user._id,
+          {
+            $set: {
+              following: newFollowing,
+            },
+          },
+          { runValidators: true, new: true }
+        );
+        res.status(200).send("Follower removed");
+      } else {
+        console.log(user.following);
+        console.log(mongoose.Types.ObjectId(req.params.userId));
+        let userId = mongoose.Types.ObjectId(req.params.userId);
+        await User.findByIdAndUpdate(
+          req.user._id,
+          {
+            $push: {
+              following: userId,
+            },
+          },
+          { runValidators: true, new: true }
+        );
+        res.status(200).send("Follower added");
+      }
+    } else {
+      let error = new Error();
+      error.httpStatusCode = 404;
+      next(error);
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -183,4 +265,7 @@ module.exports = {
   refreshToken,
   getUser,
   facebookAuthenticate,
+  postProfilePic,
+  cloudMulter,
+  followUser,
 };
