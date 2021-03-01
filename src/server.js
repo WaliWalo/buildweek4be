@@ -4,6 +4,8 @@ const { join } = require("path");
 const listEndpoints = require("express-list-endpoints");
 const mongoose = require("mongoose");
 const userRoutes = require("./routes/userRoutes");
+const postRoutes = require("./routes/postRoutes");
+const commentRoutes = require("./routes/commentRoutes");
 const oauth = require("./controllers/oauth");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
@@ -35,6 +37,8 @@ server.use(express.json());
 server.use(cookieParser());
 server.use(passport.initialize());
 userRoutes(server);
+postRoutes(server);
+commentRoutes(server);
 
 // ERROR HANDLERS MIDDLEWARES
 
