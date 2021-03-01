@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-const AuthorSchema = require("../models/userModel");
+const UserSchema = require("../models/userModel");
 const { verifyJWT } = require("./authTools");
-const UserModel = mongoose.model("Author", AuthorSchema);
+const UserModel = mongoose.model("User", UserSchema);
 
 const authorize = async (req, res, next) => {
   try {
@@ -12,6 +12,7 @@ const authorize = async (req, res, next) => {
     const user = await UserModel.findById({
       _id: decoded._id,
     });
+    console.log(decoded);
     if (!user) {
       throw new Error();
     }
