@@ -1,30 +1,33 @@
-const mongoose = require('mongoose')
-const CommentSchema = require('../models/commentModel')
-const Comment = mongoose.model("Comment", CommentSchema)
-const { authorize } = require('./authTools')
+const mongoose = require("mongoose");
+const CommentSchema = require("../models/commentModel");
+const Comment = mongoose.model("Comment", CommentSchema);
+const { authorize } = require("./authTools");
 
-getComments = async (req, res, next) => {
-}
+const getComments = async (req, res, next) => {
+  try {
+    const comments = await Comment.find().populate([
+      {
+        path: "commentId",
+        select: ["content", "userId", "postId"],
+      },
+      { path: "userId", select: ["firstName", "lastName"] },
+    ]);
+    res.send(comments);
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
 
 const addNewComment = async (req, res, next) => {
-    
-    try {
-        let newComment = new Comment(req.body);
-        if (req.body.commentId) {
-            let commentSquared = await newComment.save();
-            console.log("comment of a comment", commentSquared);
-            res.send(commentSquared);
-        } else { 
-            let comment = await newComment.save()
-            comment.commentId = comment._id
-            res.send(comment)
-        }
-    } catch (error) {
+  try {
+    const newComment = new Comment(req.body);
+    const { _id } = await newComment.save();
+    res.status(201).send(newComment);
+  } catch (error) {
     error.httpStatusCode = 400;
     next(error);
   }
 };
 
-
-
-module.exports = {addNewComment}
+module.exports = { getComments, addNewComment };
