@@ -1,17 +1,13 @@
 const { authorize } = require("../controllers/authMiddleware");
 const {
-  createConversation,
-  createMessage,
-  deleteMessage,
+  getConversations,
+  getMessages,
 } = require("../controllers/conversationController");
 
 const routes = (app) => {
-  app.route("/conversation").post(authorize, createConversation);
+  app.route("/conversation").get(authorize, getConversations);
 
-  app
-    .route("/message/:convoId")
-    .post(authorize, createMessage)
-    .delete(authorize, deleteMessage);
+  app.route("/message/:convoId").get(authorize, getMessages);
 };
 
 module.exports = routes;
