@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const bcrypt = require("bcryptjs");
-const AuthorSchema = new Schema(
+const UserSchema = new Schema(
   {
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
@@ -21,7 +21,7 @@ const AuthorSchema = new Schema(
   { timestamps: true }
 );
 
-AuthorSchema.methods.toJSON = function () {
+UserSchema.methods.toJSON = function () {
   const user = this;
   const userObject = user.toObject();
 
@@ -31,7 +31,7 @@ AuthorSchema.methods.toJSON = function () {
   return userObject;
 };
 
-AuthorSchema.statics.findByCredentials = async function (email, password) {
+UserSchema.statics.findByCredentials = async function (email, password) {
   const user = await this.findOne({ email });
 
   if (user) {
@@ -43,7 +43,7 @@ AuthorSchema.statics.findByCredentials = async function (email, password) {
   }
 };
 
-AuthorSchema.pre("save", async function (next) {
+UserSchema.pre("save", async function (next) {
   const user = this;
   const plainPW = user.password;
   console.log(user);
@@ -53,4 +53,4 @@ AuthorSchema.pre("save", async function (next) {
   next();
 });
 
-module.exports = AuthorSchema;
+module.exports = UserSchema;
