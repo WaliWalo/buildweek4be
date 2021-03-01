@@ -76,7 +76,7 @@ const login = async (req, res, next) => {
       res
         .status(201)
         .cookie("accessToken", token.token, {
-          httpOnly: false,
+          httpOnly: true,
         })
         .send({ status: "ok" });
       // res.status(200).redirect(process.env.FE_URL);
@@ -89,7 +89,13 @@ const login = async (req, res, next) => {
 
 const logout = async (req, res, next) => {
   try {
-    res.send();
+    newRefreshTokens = req.user.refreshTokens.filter(
+      (token) => token.refreshToken !== req.token.refreshToken
+    );
+    await req.user.updateOne({ refreshTokens: newRefreshTokens });
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    res.send("ok");
   } catch (error) {
     console.log(error);
     next(error);
@@ -99,7 +105,7 @@ const logout = async (req, res, next) => {
 const googleAuthenticate = async (req, res, next) => {
   try {
     res.cookie("accessToken", req.user.tokens.token, {
-      httpOnly: false,
+      httpOnly: true,
     });
 
     res.status(200).redirect(process.env.FE_URL);

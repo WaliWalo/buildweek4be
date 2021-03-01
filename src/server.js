@@ -36,7 +36,7 @@ server.use(express.json());
 
 server.use(cookieParser());
 server.use(passport.initialize());
-userRoutes(server);
+userRoutes(server); //"user"
 postRoutes(server);
 commentRoutes(server);
 

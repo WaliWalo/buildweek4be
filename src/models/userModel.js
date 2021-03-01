@@ -16,6 +16,7 @@ const UserSchema = new Schema(
       ],
     },
     password: { type: String },
+    following: [{ userId: { type: Schema.Types.ObjectId, ref: "User" } }],
     googleId: String,
   },
   { timestamps: true }

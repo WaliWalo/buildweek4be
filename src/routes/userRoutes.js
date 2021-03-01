@@ -22,7 +22,7 @@ const routes = (app) => {
 
   app.route("/register").post(addNewUser);
   app.route("/login").post(login);
-  app.route("/logout").post(logout);
+  app.route("/logout").post(authorize, logout);
   app
     .route("/googleLogin")
     .get(passport.authenticate("google", { scope: ["profile", "email"] }));
