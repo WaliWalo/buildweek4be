@@ -18,6 +18,7 @@ const UserSchema = new Schema(
     password: { type: String },
     following: [{ userId: { type: Schema.Types.ObjectId, ref: "User" } }],
     googleId: String,
+    refreshTokens: [{ type: String }],
   },
   { timestamps: true }
 );
@@ -28,6 +29,7 @@ UserSchema.methods.toJSON = function () {
 
   delete userObject.password;
   delete userObject.__v;
+  delete userObject.refreshTokens;
 
   return userObject;
 };

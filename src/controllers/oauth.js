@@ -1,8 +1,8 @@
 const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const mongoose = require("mongoose");
-const AuthorSchema = require("../models/userModel");
-const UserModel = mongoose.model("Author", AuthorSchema);
+const UserSchema = require("../models/userModel");
+const UserModel = mongoose.model("User", UserSchema);
 const { authenticate } = require("./authTools");
 
 passport.use(
@@ -21,7 +21,6 @@ passport.use(
         email: profile.emails[0].value,
         password: "NA",
       };
-
       try {
         const user = await UserModel.findOne({ googleId: profile.id });
 

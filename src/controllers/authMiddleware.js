@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 const jwt = require("jsonwebtoken");
-const AuthorSchema = require("../models/userModel");
+const UserSchema = require("../models/userModel");
 const { verifyJWT } = require("./authTools");
-const UserModel = mongoose.model("Author", AuthorSchema);
+const UserModel = mongoose.model("User", UserSchema);
 
 const authorize = async (req, res, next) => {
   try {
@@ -12,8 +12,11 @@ const authorize = async (req, res, next) => {
     const user = await UserModel.findById({
       _id: decoded._id,
     });
+    console.log(decoded);
     if (!user) {
-      throw new Error();
+      const err = new Error({ error: "Please authenticate" });
+      err.httpStatusCode = 403;
+      next(err);
     }
 
     req.token = token;
@@ -27,13 +30,4 @@ const authorize = async (req, res, next) => {
   }
 };
 
-const adminOnlyMiddleware = async (req, res, next) => {
-  if (req.user && req.user.role === "admin") next();
-  else {
-    const err = new Error("Only for admins!");
-    err.httpStatusCode = 403;
-    next(err);
-  }
-};
-
-module.exports = { authorize, adminOnlyMiddleware };
+module.exports = { authorize };

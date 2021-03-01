@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const UserSchema = require("../models/userModel");
 const User = mongoose.model("User", UserSchema);
-const { authenticate } = require("./authTools");
+const { authenticate, refresh } = require("./authTools");
 
 const getUsers = async (req, res, next) => {
   const user = await User.find({});
@@ -26,8 +26,18 @@ const addNewUser = async (req, res, next) => {
   }
 };
 
+const getUser = (req, res, next) => {
+  try {
+    res.send(req.user);
+  } catch (error) {
+    error = new Error();
+    error.httpStatusCode = 404;
+    next(error);
+  }
+};
+
 const getUserById = async (req, res, next) => {
-  const user = await User.findById(req.params.authorId);
+  const user = await User.findById(req.params.userId);
   if (user) {
     res.status(200).send(user);
   } else {
@@ -39,7 +49,7 @@ const getUserById = async (req, res, next) => {
 
 const updateUser = (req, res, next) => {
   User.findOneAndUpdate(
-    { _id: req.params.authorId },
+    { _id: req.user._id },
     req.body,
     { new: true, useFindAndModify: false },
     (err, user) => {
@@ -52,11 +62,11 @@ const updateUser = (req, res, next) => {
 };
 
 const deleteUser = (req, res, next) => {
-  User.findOneAndDelete({ _id: req.params.authorId }, (err, user) => {
+  User.findOneAndDelete({ _id: req.user._id }, (err, user) => {
     if (err) {
       res.send(err);
     } else {
-      res.send(`${req.params.authorId} deleted`);
+      res.send(`${req.user._id} deleted`);
     }
   });
 };
@@ -65,14 +75,17 @@ const login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const user = await User.findByCredentials(email, password);
-    console.log(user);
+
     if (user === null) {
       res.status(404).send({ error: "user not found" });
     } else if (user.error) {
       res.status(403).send(user);
     } else {
       const token = await authenticate(user);
-      console.log(token.token);
+      res.cookie("refreshToken", token.refreshToken, {
+        httpOnly: true,
+        path: "/users/refreshToken",
+      });
       res
         .status(201)
         .cookie("accessToken", token.token, {
@@ -102,10 +115,38 @@ const logout = async (req, res, next) => {
   }
 };
 
+const refreshToken = async (req, res, next) => {
+  try {
+    // Grab the refresh token
+    console.log(req.cookies);
+    const oldRefreshToken = req.cookies.refreshToken;
+
+    // Verify the token
+    // If it's ok generate new access token and new refresh token
+    const { accessToken, refreshToken } = await refresh(oldRefreshToken);
+
+    // send them back
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+    });
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      path: "/users/refreshToken",
+    });
+    res.send({ accessToken, refreshToken });
+  } catch (error) {
+    next(error);
+  }
+};
+
 const googleAuthenticate = async (req, res, next) => {
   try {
     res.cookie("accessToken", req.user.tokens.token, {
       httpOnly: true,
+    });
+    res.cookie("refreshToken", req.user.tokens.refreshToken, {
+      httpOnly: true,
+      path: "/users/refreshToken",
     });
 
     res.status(200).redirect(process.env.FE_URL);
@@ -123,4 +164,6 @@ module.exports = {
   login,
   logout,
   googleAuthenticate,
+  refreshToken,
+  getUser,
 };
