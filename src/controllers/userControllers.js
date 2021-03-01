@@ -68,13 +68,64 @@ const getUser = (req, res, next) => {
 };
 
 const getUserById = async (req, res, next) => {
-  const user = await User.findById(req.params.userId);
-  if (user) {
-    res.status(200).send(user);
-  } else {
-    let error = new Error();
-    error.httpStatusCode = 404;
-    next(error);
+  try {
+    const user = await User.findById(req.params.userId);
+    if (user) {
+      res.status(200).send(user);
+    } else {
+      let error = new Error();
+      error.httpStatusCode = 404;
+      next(error);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const followUser = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (user) {
+      const findFollower = user.following.filter(
+        (follower) => follower.toString() === req.params.userId
+      );
+      console.log(findFollower);
+      if (findFollower.length > 0) {
+        const newFollowing = user.following.filter(
+          (follower) => follower.toString() !== req.params.userId
+        );
+        await User.findByIdAndUpdate(
+          req.user._id,
+          {
+            $set: {
+              following: newFollowing,
+            },
+          },
+          { runValidators: true, new: true }
+        );
+        res.status(200).send("Follower removed");
+      } else {
+        console.log(user.following);
+        console.log(mongoose.Types.ObjectId(req.params.userId));
+        let userId = mongoose.Types.ObjectId(req.params.userId);
+        await User.findByIdAndUpdate(
+          req.user._id,
+          {
+            $push: {
+              following: userId,
+            },
+          },
+          { runValidators: true, new: true }
+        );
+        res.status(200).send("Follower added");
+      }
+    } else {
+      let error = new Error();
+      error.httpStatusCode = 404;
+      next(error);
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
@@ -216,4 +267,5 @@ module.exports = {
   facebookAuthenticate,
   postProfilePic,
   cloudMulter,
+  followUser,
 };
