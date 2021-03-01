@@ -6,9 +6,12 @@ const mongoose = require("mongoose");
 const userRoutes = require("./routes/userRoutes");
 const postRoutes = require("./routes/postRoutes");
 const commentRoutes = require("./routes/commentRoutes");
+const conversationController = require("./routes/conversationRoutes");
 const oauth = require("./controllers/oauth");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
+const http = require("http");
+const createSocketServer = require("./socket");
 const {
   notFoundHandler,
   forbiddenHandler,
@@ -17,6 +20,8 @@ const {
 } = require("./errorHandlers");
 
 const server = express();
+const httpServer = http.createServer(server);
+createSocketServer(httpServer);
 const whitelist = [`${process.env.FE_URL}`];
 const corsOptions = {
   origin: function (origin, callback) {
@@ -39,6 +44,7 @@ server.use(passport.initialize());
 userRoutes(server); //"user"
 postRoutes(server);
 commentRoutes(server);
+conversationController(server);
 
 // ERROR HANDLERS MIDDLEWARES
 
@@ -55,7 +61,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(
-    server.listen(port, () => {
+    httpServer.listen(port, () => {
       console.log("Running on port", port);
     })
   )
