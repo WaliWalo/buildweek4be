@@ -14,6 +14,7 @@ const createConversation = async (participants) => {
       const newConversation = new ConversationModel({
         creator: participants.currentUserId,
         participants: [participants.currentUserId, ...uniqueParticipants],
+        oneDay: participants.oneDay,
       });
       const saved = await newConversation.save();
       return saved;
@@ -39,6 +40,7 @@ const createConversation = async (participants) => {
             participants.currentUserId,
             participants.participants[0],
           ],
+          oneDay: participants.oneDay,
         });
         const saved = await newConversation.save();
         return saved;
