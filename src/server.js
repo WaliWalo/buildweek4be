@@ -7,6 +7,7 @@ const userRoutes = require("./routes/userRoutes");
 const postRoutes = require("./routes/postRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const conversationController = require("./routes/conversationRoutes");
+const storyRoutes = require("./routes/storyRoutes");
 const oauth = require("./controllers/oauth");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
@@ -45,6 +46,7 @@ userRoutes(server); //"user"
 postRoutes(server);
 commentRoutes(server);
 conversationController(server);
+storyRoutes(server);
 
 // ERROR HANDLERS MIDDLEWARES
 

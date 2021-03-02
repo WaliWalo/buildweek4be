@@ -8,7 +8,7 @@ const badRequestHandler = (err, req, res, next) => {
 
 const forbiddenHandler = (err, req, res, next) => {
   if (err.httpStatusCode === 403) {
-    res.status(403).send({ error: err.error });
+    res.status(403).send(err);
   }
   next(err);
 }; // 403
