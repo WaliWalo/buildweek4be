@@ -56,7 +56,7 @@ const addStory = async (req, res, next) => {
         .then((result) => {
           cloudinary.uploader.destroy(
             result.resources[0].public_id,
-            { resource_type: "video" },
+            { resource_type: result.resources[0].resource_type },
             (err) => {
               console.log(err);
               console.log(result.resources[0].public_id, " deleted");
@@ -77,7 +77,24 @@ const addStory = async (req, res, next) => {
 
 const deleteStory = async (req, res, next) => {
   try {
-    await StoryModel.findByIdAndDelete(req.params.storyId);
+    const deletedStory = await StoryModel.findByIdAndDelete(req.params.storyId);
+    let urlArray = deletedStory.story.split("stories");
+    let fileName = "stories" + urlArray[1];
+
+    cloudinary.search
+      .expression(fileName)
+      .sort_by("public_id", "desc")
+      .execute()
+      .then((result) => {
+        cloudinary.uploader.destroy(
+          result.resources[0].public_id,
+          { resource_type: result.resources[0].resource_type },
+          (err) => {
+            console.log(err);
+            console.log(result.resources[0].public_id, " deleted");
+          }
+        );
+      });
     res.status(203).send("Story is deleted");
   } catch (error) {
     console.log(error);
@@ -94,12 +111,30 @@ agenda.define("delete old stories", async (job) => {
   };
 
   const stories = await StoryModel.find();
-  console.log(stories);
 
   let req;
   stories.forEach(async (element) => {
     if (calculteDate(element.createdAt) <= moment().format()) {
+      let urlArray = element.story.split("stories");
+      let fileName = "stories" + urlArray[1];
+      console.log(fileName);
+      console.log(urlArray);
       req = await StoryModel.findByIdAndDelete(element._id);
+
+      cloudinary.search
+        .expression(fileName)
+        .sort_by("public_id", "desc")
+        .execute()
+        .then((result) => {
+          cloudinary.uploader.destroy(
+            result.resources[0].public_id,
+            { resource_type: result.resources[0].resource_type },
+            (err) => {
+              console.log(err);
+              console.log(result.resources[0].public_id, " deleted");
+            }
+          );
+        });
     }
   });
 });

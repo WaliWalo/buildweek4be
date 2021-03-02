@@ -82,6 +82,26 @@ const deletePost = async (req, res, next) => {
   try {
     const deletedPost = await PostModel.findByIdAndDelete(req.params.postId);
     if (deletedPost) {
+      deletedPost.urls.forEach((element) => {
+        let urlArray = element.split("posts");
+        let fileName = "posts" + urlArray[1];
+
+        cloudinary.search
+          .expression(fileName)
+          .sort_by("public_id", "desc")
+          .execute()
+          .then((result) => {
+            cloudinary.uploader.destroy(
+              result.resources[0].public_id,
+              { resource_type: result.resources[0].resource_type },
+              (err) => {
+                console.log(err);
+                console.log(result.resources[0].public_id, " deleted");
+              }
+            );
+          });
+      });
+
       res.status(203).send("Deleted");
     } else {
       const error = new Error(`Post with id ${req.params.postId} not found`);
