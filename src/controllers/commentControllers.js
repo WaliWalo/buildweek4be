@@ -3,6 +3,34 @@ const CommentSchema = require("../models/commentModel");
 const Comment = mongoose.model("Comment", CommentSchema);
 const { authorize } = require("./authTools");
 
+const addRemoveLike = async (req, res, next) => {
+  try {
+    const isLikeThere = await Comment.findOne({
+      _id: req.params.commentId,
+      likes: req.params.userId,
+    });
+
+    if (isLikeThere) {
+      const removeLike = await Comment.findByIdAndUpdate(req.params.commentId, {
+        $pull: {
+          likes: req.params.userId,
+        },
+      });
+      res.status(203).send(removeLike);
+    } else {
+      const newLike = await Comment.findByIdAndUpdate(req.params.commentId, {
+        $addToSet: {
+          likes: req.params.userId,
+        },
+      });
+      res.status(200).send(newLike);
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 //GET children comments
 const getMoreComments = async (req, res, next) => {
   try {
@@ -88,6 +116,7 @@ const deleteComment = async (req, res, next) => {
 };
 
 module.exports = {
+  addRemoveLike,
   getMoreComments,
   getComments,
   getCommentById,

@@ -1,4 +1,5 @@
 const {
+  addRemoveLike,
   getMoreComments,
   getComments,
   getCommentById,
@@ -18,6 +19,8 @@ const routes = (app) => {
     .delete(deleteComment);
 
   app.route("/comments/more/:commentId").get(getMoreComments);
+
+  app.route("/comments/:commentId/:userId").post(addRemoveLike);
 };
 
 module.exports = routes;
