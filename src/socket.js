@@ -72,10 +72,35 @@ const createSocketServer = (server) => {
     });
 
     //leave room
+    socket.on("leaveRoom", async ({ convoId, userId, participant }) => {
+      try {
+        const removeUser = await removeParticipantFromConvo(
+          convoId,
+          userId,
+          participant
+        );
+        console.log(removeUser);
+        if (!removeUser.error) {
+          socket.broadcast
+            .to(convoId)
+            .emit("sendMessage", { msg: `${participant} removed/left` });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
 
     //delete message
-    socket.on("disconnect", () => {
-      console.log("socket disconnected");
+    socket.on("deleteMessage", async ({ msgId, userId }) => {
+      try {
+        const deletedMessage = await deleteMessage(msgId, userId);
+        console.log(deletedMessage);
+        // socket.broadcast
+        //   .to(convoId)
+        //   .emit("sendMessage", { msg: `${msgId} removed` });
+      } catch (error) {
+        console.log(error);
+      }
     });
   });
 };

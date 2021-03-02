@@ -74,9 +74,19 @@ const createMessage = async (messageObject) => {
   }
 };
 
-const deleteMessage = (messageId) => {
+const deleteMessage = async (messageId, userId) => {
   try {
     //ONLY SENDER CAN DELETE
+    console.log(messageId, userId);
+    const message = await MessageModel.findById(
+      mongoose.Types.ObjectId(messageId)
+    );
+    if (message.sender.toString() === userId) {
+      await MessageModel.findByIdAndDelete(mongoose.Types.ObjectId(messageId));
+      return { msg: "message deleted" };
+    } else {
+      return { error: "Not Authorized" };
+    }
   } catch (error) {
     console.log(error);
   }
@@ -100,10 +110,23 @@ const addParticipantToConvo = async (participant, convoId) => {
   }
 };
 
-const removeParticipantFromConvo = (participant, convoId) => {
+const removeParticipantFromConvo = async (convoId, userId, participant) => {
   try {
     //ADD PARTICIPANT TO USER, UPDATE EXISTING CONVO
     //ONLY CREATOR CAN REMOVE
+    const convo = await ConversationModel.findById(convoId);
+    console.log(convo.creator.toString() === userId);
+    if (
+      convo.creator.toString() === userId ||
+      convo.creator2.toString() === userId
+    ) {
+      const updateConvo = await ConversationModel.findByIdAndUpdate(convoId, {
+        $pull: { participants: participant },
+      });
+      return updateConvo;
+    } else {
+      return { error: "Not authorized" };
+    }
   } catch (error) {
     console.log(error);
   }
