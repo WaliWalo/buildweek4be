@@ -8,6 +8,8 @@ const cloudStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: "stories",
+    resource_type: "auto",
+    allowed_formats: ["jpg", "mp4"],
   },
 });
 
@@ -31,10 +33,18 @@ const addStory = async (req, res, next) => {
     const story = { user: req.user._id, story: req.file.path };
     const duration = await getVideoDurationInSeconds(req.file.path);
     console.log("duration---->", duration);
-    const addStory = new StoryModel(story);
 
-    await addStory.save();
-    res.status(201).send(addStory);
+    if (duration < 10.01) {
+      const addStory = new StoryModel(story);
+
+      await addStory.save();
+      res.status(201).send(addStory);
+    } else {
+      const err = new Error();
+      err.message = "Video should not be longer than 10 seconds";
+      err.httpStatusCode = 403;
+      next(err);
+    }
   } catch (error) {
     console.log(error);
     next(error);
