@@ -5,10 +5,16 @@ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const getPosts = async (req, res, next) => {
   try {
-    const posts = await PostModel.find().populate({
-      path: "user",
-      select: ["_id", "firstName", "lastName"],
-    });
+    const posts = await PostModel.find().populate([
+      {
+        path: "user",
+        select: ["_id", "firstName", "lastName", "picture"],
+      },
+      {
+        path: "likes",
+        select: ["_id", "firstName", "lastName", "picture"],
+      },
+    ]);
     res.status(200).send(posts);
   } catch (error) {
     console.log(error);
@@ -29,10 +35,16 @@ const addNewPost = async (req, res, next) => {
 
 const getPostById = async (req, res, next) => {
   try {
-    const post = await PostModel.findById(req.params.postId).populate({
-      path: "user",
-      select: ["_id", "firstName", "lastName"],
-    });
+    const post = await PostModel.findById(req.params.postId).populate([
+      {
+        path: "user",
+        select: ["_id", "firstName", "lastName", "picture"],
+      },
+      {
+        path: "likes",
+        select: ["_id", "firstName", "lastName", "picture"],
+      },
+    ]);
     if (post) {
       res.status(200).send(post);
     } else {
@@ -120,6 +132,34 @@ const postPicture = async (req, res, next) => {
   }
 };
 
+const addRemoveLike = async (req, res, next) => {
+  try {
+    const isLikeThere = await PostModel.findOne({
+      _id: req.params.postId,
+      likes: req.params.userId,
+    });
+
+    if (isLikeThere) {
+      const removeLike = await PostModel.findByIdAndUpdate(req.params.postId, {
+        $pull: {
+          likes: req.params.userId,
+        },
+      });
+      res.status(203).send(removeLike);
+    } else {
+      const newLike = await PostModel.findByIdAndUpdate(req.params.postId, {
+        $addToSet: {
+          likes: req.params.userId,
+        },
+      });
+      res.status(200).send(newLike);
+    }
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
 module.exports = {
   getPosts,
   addNewPost,
@@ -128,4 +168,5 @@ module.exports = {
   deletePost,
   cloudMulter,
   postPicture,
+  addRemoveLike,
 };

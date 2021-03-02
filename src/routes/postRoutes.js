@@ -6,6 +6,7 @@ const {
   deletePost,
   cloudMulter,
   postPicture,
+  addRemoveLike,
 } = require("../controllers/postControllers");
 const { authorize } = require("../controllers/authMiddleware");
 
@@ -21,6 +22,9 @@ const routes = (app) => {
   app
     .route("/posts/:postId/postPicture")
     .post(authorize, cloudMulter.array("picture", 12), postPicture);
+  app
+    .route("/posts/:postId/addRemoveLike/:userId")
+    .post(authorize, addRemoveLike);
 };
 
 module.exports = routes;
