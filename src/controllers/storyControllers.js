@@ -114,7 +114,7 @@ agenda.define("delete old stories", async (job) => {
   await agenda.start();
 
   console.log("hello");
-  await agenda.every("10 seconds", "delete old stories");
+  await agenda.every("1 hour", "delete old stories");
 
   // Alternatively, you could also do:
   //   await agenda.every("*/3 * * * *", "delete old users");
