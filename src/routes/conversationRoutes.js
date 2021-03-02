@@ -5,10 +5,12 @@ const {
 } = require("../controllers/conversationController");
 
 const routes = (app) => {
-  app.route("/conversation").get(authorize, getConversations);
-  app.route("/conversation/:userId").get(authorize);
+  // GET CONVERSATIONS BY USER ID
+  app.route("/conversation/:userId").get(authorize, getConversations);
+  // GET CONVERSATION BY CONVO ID
   app.route("/message/getMessage/:convoId").get(authorize, getMessages);
-  //user use this endpoint to get image url, then emit with the url to store image
+  // user use this endpoint to get image url, return url to client
+  // (then emit with the url to store image=>this is from front end)
   app.route("/messages/postPic").post(authorize);
 };
 
