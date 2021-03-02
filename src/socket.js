@@ -26,22 +26,26 @@ const createSocketServer = (server) => {
       });
     });
     //start conversation
-    socket.on("createConvo", async ({ currentUserId, participants }) => {
-      try {
-        const newConvo = await createConversation({
-          currentUserId,
-          participants,
-        });
-        socket.join(newConvo._id);
-        // participants.forEach((participant) => {
-        //   // sockets[participant].join(room);
-        // });
+    socket.on(
+      "createConvo",
+      async ({ currentUserId, participants, oneDay }) => {
+        try {
+          const newConvo = await createConversation({
+            currentUserId,
+            participants,
+            oneDay,
+          });
+          socket.join(newConvo._id);
+          // participants.forEach((participant) => {
+          //   // sockets[participant].join(room);
+          // });
 
-        console.log(newConvo);
-      } catch (error) {
-        console.log(error);
+          console.log(newConvo);
+        } catch (error) {
+          console.log(error);
+        }
       }
-    });
+    );
 
     socket.on("addUserToConvo", async ({ convoId, userId }) => {
       try {
