@@ -6,7 +6,7 @@ const {
 
 const routes = (app) => {
   app.route("/conversation").get(authorize, getConversations);
-
+  app.route("/conversation/:userId").get(authorize, getConversations);
   app.route("/message/:convoId").get(authorize, getMessages);
 };
 

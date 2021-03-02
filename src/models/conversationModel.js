@@ -2,8 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const ConversationSchema = new Schema(
   {
-    creator: { type: mongoose.ObjectId, ref: "User" },
-    participants: [{ type: mongoose.ObjectId, ref: "User" }],
+    creator: { type: mongoose.ObjectId, ref: "User", required: true },
+    creator2: { type: mongoose.ObjectId, ref: "User" },
+    participants: [{ type: mongoose.ObjectId, ref: "User", required: true }],
   },
   { timestamps: true }
 );
