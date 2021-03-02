@@ -12,7 +12,7 @@ const authorize = async (req, res, next) => {
     const user = await UserModel.findById({
       _id: decoded._id,
     });
-    console.log(decoded);
+    // console.log(decoded);
     if (!user) {
       const err = new Error({ error: "Please authenticate" });
       err.httpStatusCode = 403;

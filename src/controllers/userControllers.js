@@ -166,7 +166,7 @@ const login = async (req, res, next) => {
       const token = await authenticate(user);
       res.cookie("refreshToken", token.refreshToken, {
         httpOnly: true,
-        path: "/users/refreshToken",
+        path: "/refreshToken",
       });
       res
         .status(201)
@@ -213,7 +213,7 @@ const refreshToken = async (req, res, next) => {
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      path: "/users/refreshToken",
+      path: "/refreshToken",
     });
     res.send({ accessToken, refreshToken });
   } catch (error) {
@@ -228,7 +228,7 @@ const googleAuthenticate = async (req, res, next) => {
     });
     res.cookie("refreshToken", req.user.tokens.refreshToken, {
       httpOnly: true,
-      path: "/users/refreshToken",
+      path: "/refreshToken",
     });
 
     res.status(200).redirect(process.env.FE_URL);
@@ -244,7 +244,7 @@ const facebookAuthenticate = async (req, res, next) => {
     });
     res.cookie("refreshToken", req.user.tokens.refreshToken, {
       httpOnly: true,
-      path: "/users/refreshToken",
+      path: "/refreshToken",
     });
 
     res.status(200).redirect(process.env.FE_URL);
