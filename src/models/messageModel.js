@@ -2,14 +2,14 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const MessageSchema = new Schema(
   {
-    conversationId: {
+    convoId: {
       type: mongoose.ObjectId,
       ref: "Conversation",
       required: true,
     },
-    content: { type: String },
+    content: { type: String, required: true },
     url: { type: String },
-    sender: { type: mongoose.ObjectId, ref: "User" },
+    sender: { type: mongoose.ObjectId, ref: "User", required: true },
   },
   { timestamps: true }
 );

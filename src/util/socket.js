@@ -46,38 +46,29 @@ const createConversation = async (participants) => {
         return { error: "convo existing" };
       }
     }
-    // const currentUser = await User.findById(participants.currentUserId);
-    // if (participants.selectedUser) {
-    //   const selectedUser = await User.findById(participants.selectedUserId);
-    //   if (currentUser && selectedUser) {
-
-    //     if (findConversation.length === 0) {
-    //       const newConversation = new ConversationModel({
-    //         creator: participants.currentUserId,
-    //         creator2: participants.selectedUserId,
-    //         participants: [
-    //           participants.currentUserId,
-    //           participants.selectedUserId,
-    //         ],
-    //       });
-    //       const saved = await newConversation.save();
-    //       return saved;
-    //     } else {
-    //       return { error: "convo existing" };
-    //     }
-    //   } else {
-    //     return { error: "user not found" };
-    //   }
-    // }
   } catch (error) {
     console.log(error);
   }
 };
 
-const createMessage = (messageObject) => {
+const createMessage = async (messageObject) => {
   try {
     //CREATE MESSAGE
-    // {convoId, sender, content, url}
+    const { convoId, sender, content, url } = messageObject;
+
+    const selectedConvo = await ConversationModel.findById(convoId);
+    if (selectedConvo) {
+      const user = await User.findById(sender);
+      if (user) {
+        const newConvo = new MessageModel(messageObject);
+        const saved = await newConvo.save();
+        return saved;
+      } else {
+        return { error: "user not found" };
+      }
+    } else {
+      return { error: "Convo not found" };
+    }
   } catch (error) {
     console.log(error);
   }
@@ -91,10 +82,19 @@ const deleteMessage = (messageId) => {
   }
 };
 
-const addParticipantToConvo = (participant, convoId) => {
+const addParticipantToConvo = async (participant, convoId) => {
   try {
     //ADD PARTICIPANT TO USER, UPDATE EXISTING CONVO
     //ONLY CREATOR CAN ADD
+    const selectedConvo = await ConversationModel.findById(convoId);
+    if (selectedConvo) {
+      const updateConvo = await ConversationModel.findByIdAndUpdate(convoId, {
+        $addToSet: { participants: participant },
+      });
+      return updateConvo;
+    } else {
+      console.log("convo not found");
+    }
   } catch (error) {
     console.log(error);
   }
@@ -117,6 +117,25 @@ const getUsersInConvo = (convoId) => {
   }
 };
 
+const getAllConvoByUserId = async (userId) => {
+  try {
+    const convos = await ConversationModel.find({
+      $or: [
+        {
+          creator: userId,
+        },
+        {
+          creator2: userId,
+        },
+        { participants: userId },
+      ],
+    });
+    return convos;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   createConversation,
   createMessage,
@@ -124,4 +143,5 @@ module.exports = {
   addParticipantToConvo,
   removeParticipantFromConvo,
   getUsersInConvo,
+  getAllConvoByUserId,
 };
