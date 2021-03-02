@@ -32,7 +32,7 @@ const addNewUser = async (req, res, next) => {
 const cloudStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "posts",
+    folder: "profile",
   },
 });
 
@@ -42,7 +42,7 @@ const postProfilePic = async (req, res, next) => {
   try {
     const addPic = await User.findByIdAndUpdate(req.user._id, {
       $set: {
-        picture: req.files[0].path,
+        picture: req.file.path,
       },
     });
     if (addPic) {

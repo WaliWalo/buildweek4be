@@ -27,7 +27,7 @@ const routes = (app) => {
 
   app
     .route("/me/postProfilePic")
-    .post(authorize, cloudMulter.array("picture", 12), postProfilePic);
+    .post(authorize, cloudMulter.single("picture"), postProfilePic);
 
   app
     .route("/users/:userId")
