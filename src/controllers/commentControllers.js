@@ -79,7 +79,7 @@ const deleteComment = async (req, res, next) => {
       req.params.commentId
     );
     const deletedChildrenComments = await Comment.deleteMany({
-      commentId: { $in: deletedComment._id },
+      subcomment: { $in: deletedComment._id },
     });
     res.status(200).json({ data: "Comment successfully deleted" });
   } catch (err) {
