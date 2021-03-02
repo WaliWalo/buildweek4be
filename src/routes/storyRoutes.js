@@ -11,7 +11,7 @@ const routes = (app) => {
   app
     .route("/stories")
     .get(authorize, getStory)
-    .post(authorize, cloudMulter.single("picture"), addStory);
+    .post([authorize, cloudMulter.single("picture"), addStory]);
   app.route("/stories/:storyId").delete(authorize, deleteStory);
 };
 
