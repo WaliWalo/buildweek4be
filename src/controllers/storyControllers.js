@@ -101,23 +101,13 @@ agenda.define("delete old stories", async (job) => {
     if (calculteDate(element.createdAt) <= moment().format()) {
       req = await StoryModel.findByIdAndDelete(element._id);
     }
-    console.log({
-      calc: calculteDate(element.createdAt),
-      now: moment().format(),
-      isDate: calculteDate(element.createdAt) <= moment().format(),
-    });
   });
 });
 
 (async function () {
-  // IIFE to give access to async/await
   await agenda.start();
 
-  console.log("hello");
   await agenda.every("1 hour", "delete old stories");
-
-  // Alternatively, you could also do:
-  //   await agenda.every("*/3 * * * *", "delete old users");
 })();
 
 module.exports = {
