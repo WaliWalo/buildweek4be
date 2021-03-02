@@ -125,8 +125,6 @@ const cloudMulter = multer({ storage: cloudStorage });
 
 const postPicture = async (req, res, next) => {
   try {
-    console.log("path of url", req.files);
-
     let fileArray = [];
 
     for (let i = 0; i < req.files.length; i++) {
