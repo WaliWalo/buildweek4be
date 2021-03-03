@@ -7,7 +7,7 @@ const User = mongoose.model("User", UserSchema);
 const createConversation = async (participants) => {
   try {
     //CREATE A CONVERSATION BETWEEN PARTICIPANTS
-    console.log(participants.participants);
+    console.log(participants);
     const uniqueParticipants = [...new Set(participants.participants)];
     if (uniqueParticipants.length > 1) {
       //its a group convo
@@ -56,21 +56,25 @@ const createConversation = async (participants) => {
 const createMessage = async (messageObject) => {
   try {
     //CREATE MESSAGE
+    console.log(messageObject);
     const { convoId, sender, content, url, to } = messageObject;
     const selectedConvo = await ConversationModel.findById(convoId);
     if (selectedConvo) {
       const user = await User.findById(sender);
-      let findIfUserExistInConvo = [];
+      let findIfUserExistInConvo = null;
       if (to !== undefined) {
         findIfUserExistInConvo = await ConversationModel.find({
-          $and: [{ participants: to }, { participants: user._id }],
+          $or: [{ participants: to }, { participants: user._id }],
         });
       }
 
       if (user) {
         if (selectedConvo.participants.length === 2 && to === undefined) {
           return { error: "'to' userid required" };
-        } else if (findIfUserExistInConvo.length === 0) {
+        } else if (
+          findIfUserExistInConvo &&
+          findIfUserExistInConvo.length === 0
+        ) {
           return { error: "user not found in convo" };
         } else {
           const newConvo = new MessageModel(messageObject);
