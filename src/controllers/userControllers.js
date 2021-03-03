@@ -7,7 +7,10 @@ const cloudinary = require("./cloudinaryConfig");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const getUsers = async (req, res, next) => {
-  const user = await User.find({});
+  const user = await User.find({}).populate({
+    path: "following",
+    select: ["_id", "firstName", "lastName", "username", "picture"],
+  });
   if (user.length !== 0) {
     res.status(200).send(user);
   } else {
@@ -22,6 +25,15 @@ const addNewUser = async (req, res, next) => {
     let newAuthor = new User(req.body);
     let user = await newAuthor.save();
     console.log("test", user);
+
+    res.cookie("refreshToken", token.refreshToken, {
+      httpOnly: true,
+      path: "/refreshToken",
+    });
+    res.status(201).cookie("accessToken", token.token, {
+      httpOnly: true,
+    });
+
     res.status(201).send(user);
   } catch (error) {
     error.httpStatusCode = 400;
