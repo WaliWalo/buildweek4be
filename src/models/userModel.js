@@ -4,7 +4,8 @@ const bcrypt = require("bcryptjs");
 const UserSchema = new Schema(
   {
     firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    lastName: { type: String },
+    username: { type: String },
     email: {
       type: String,
       trim: true,
@@ -16,8 +17,11 @@ const UserSchema = new Schema(
       ],
     },
     password: { type: String },
-    following: [{ userId: { type: Schema.Types.ObjectId, ref: "User" } }],
+    following: [{ type: mongoose.ObjectId, ref: "User" }],
     googleId: String,
+    refreshTokens: [{ type: String }],
+    facebookId: String,
+    picture: { type: String },
   },
   { timestamps: true }
 );
@@ -28,6 +32,7 @@ UserSchema.methods.toJSON = function () {
 
   delete userObject.password;
   delete userObject.__v;
+  delete userObject.refreshTokens;
 
   return userObject;
 };

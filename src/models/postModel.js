@@ -2,10 +2,12 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const PostSchema = new Schema(
   {
-    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
     content: { type: String, required: true },
-    urls: [{ url: { type: String } }],
-    likes: [{ userId: { type: Schema.Types.ObjectId, ref: "User" } }],
+    urls: [
+      { type: String, required: true, defult: "https://placehold.it/400x400" },
+    ],
+    likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );
