@@ -1,5 +1,17 @@
 const ConversationModel = require("../models/ConversationModel");
 const MessageModel = require("../models/MessageModel");
+const multer = require("multer");
+const cloudinary = require("./cloudinaryConfig");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+const cloudStorage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "chat",
+  },
+});
+
+const cloudMulter = multer({ storage: cloudStorage });
 
 const getConversations = async (req, res, next) => {
   try {
@@ -39,4 +51,13 @@ const getMessages = async (req, res, next) => {
   }
 };
 
-module.exports = { getMessages, getConversations };
+const getImgUrl = async (req, res, next) => {
+  try {
+    res.send({ imageUrl: req.file.path });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
+module.exports = { getMessages, getConversations, cloudMulter, getImgUrl };
