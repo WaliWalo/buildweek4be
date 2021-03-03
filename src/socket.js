@@ -7,6 +7,7 @@ const {
   removeParticipantFromConvo,
   getUsersInConvo,
   getAllConvoByUserId,
+  likeMessage,
 } = require("./util/socket");
 
 const createSocketServer = (server) => {
@@ -60,13 +61,14 @@ const createSocketServer = (server) => {
     });
 
     //send message
-    socket.on("sendMessage", async ({ convoId, sender, url, content }) => {
+    socket.on("sendMessage", async ({ convoId, sender, url, content, to }) => {
       try {
         const newMessage = await createMessage({
           convoId,
           sender,
           url,
           content,
+          to,
         });
         socket.broadcast.to(convoId).emit("sendMessage", newMessage);
         console.log(newMessage);
@@ -95,13 +97,22 @@ const createSocketServer = (server) => {
     });
 
     //delete message
-    socket.on("deleteMessage", async ({ msgId, userId }) => {
+    socket.on("deleteMessage", async ({ convoId, msgId, userId }) => {
       try {
         const deletedMessage = await deleteMessage(msgId, userId);
         console.log(deletedMessage);
-        // socket.broadcast
-        //   .to(convoId)
-        //   .emit("sendMessage", { msg: `${msgId} removed` });
+        socket.broadcast
+          .to(convoId)
+          .emit("sendMessage", { msg: `${msgId} removed` });
+      } catch (error) {
+        console.log(error);
+      }
+    });
+
+    socket.on("likeMessage", async ({ msgId, userId }) => {
+      try {
+        const likedMessage = await likeMessage(msgId, userId);
+        console.log(likedMessage);
       } catch (error) {
         console.log(error);
       }
