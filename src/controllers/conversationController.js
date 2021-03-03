@@ -4,12 +4,7 @@ const MessageModel = require("../models/MessageModel");
 const getConversations = async (req, res, next) => {
   try {
     const conversation = await ConversationModel.find({
-      $or: [
-        { creator: req.params.userId },
-        {
-          creator2: req.params.userId,
-        },
-      ],
+      participants: { $elemMatch: { $eq: req.params.userId } },
     });
     if (conversation) {
       res.send(conversation);
