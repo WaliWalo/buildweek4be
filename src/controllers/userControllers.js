@@ -215,7 +215,7 @@ const refreshToken = async (req, res, next) => {
       httpOnly: true,
       path: "/refreshToken",
     });
-    res.send({ accessToken, refreshToken });
+    res.send("tokens are refreshed");
   } catch (error) {
     next(error);
   }

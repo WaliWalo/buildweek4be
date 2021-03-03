@@ -10,6 +10,8 @@ const MessageSchema = new Schema(
     content: { type: String, required: true },
     url: { type: String },
     sender: { type: mongoose.ObjectId, ref: "User", required: true },
+    to: { type: mongoose.ObjectId, ref: "User" },
+    like: [{ type: mongoose.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );

@@ -5,6 +5,7 @@ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const { getVideoDurationInSeconds } = require("get-video-duration");
 const moment = require("moment");
 const Agenda = require("agenda");
+const Conversation = require("../models/ConversationModel");
 
 const agenda = new Agenda({
   db: {
@@ -56,7 +57,7 @@ const addStory = async (req, res, next) => {
         .then((result) => {
           cloudinary.uploader.destroy(
             result.resources[0].public_id,
-            { resource_type: "video" },
+            { resource_type: result.resources[0].resource_type },
             (err) => {
               console.log(err);
               console.log(result.resources[0].public_id, " deleted");
@@ -77,7 +78,24 @@ const addStory = async (req, res, next) => {
 
 const deleteStory = async (req, res, next) => {
   try {
-    await StoryModel.findByIdAndDelete(req.params.storyId);
+    const deletedStory = await StoryModel.findByIdAndDelete(req.params.storyId);
+    let urlArray = deletedStory.story.split("stories");
+    let fileName = "stories" + urlArray[1];
+
+    cloudinary.search
+      .expression(fileName)
+      .sort_by("public_id", "desc")
+      .execute()
+      .then((result) => {
+        cloudinary.uploader.destroy(
+          result.resources[0].public_id,
+          { resource_type: result.resources[0].resource_type },
+          (err) => {
+            console.log(err);
+            console.log(result.resources[0].public_id, " deleted");
+          }
+        );
+      });
     res.status(203).send("Story is deleted");
   } catch (error) {
     console.log(error);
@@ -85,21 +103,52 @@ const deleteStory = async (req, res, next) => {
   }
 };
 
+const calculteDate = (createdAt) => {
+  let date = moment(createdAt).add(24, "hours").format();
+  // date.replace("Moment<", "");
+  return date;
+};
+
 agenda.define("delete old stories", async (job) => {
   //"86400000"
-  const calculteDate = (createdAt) => {
-    let date = moment(createdAt).add(24, "hours").format();
-    // date.replace("Moment<", "");
-    return date;
-  };
 
   const stories = await StoryModel.find();
-  console.log(stories);
 
   let req;
   stories.forEach(async (element) => {
     if (calculteDate(element.createdAt) <= moment().format()) {
+      let urlArray = element.story.split("stories");
+      let fileName = "stories" + urlArray[1];
+      console.log(fileName);
+      console.log(urlArray);
       req = await StoryModel.findByIdAndDelete(element._id);
+
+      cloudinary.search
+        .expression(fileName)
+        .sort_by("public_id", "desc")
+        .execute()
+        .then((result) => {
+          cloudinary.uploader.destroy(
+            result.resources[0].public_id,
+            { resource_type: result.resources[0].resource_type },
+            (err) => {
+              console.log(err);
+              console.log(result.resources[0].public_id, " deleted");
+            }
+          );
+        });
+    }
+  });
+});
+
+agenda.define("delete old conversation", async () => {
+  const conversations = await Conversation.find();
+
+  conversations.forEach(async (convo) => {
+    if (convo.oneDay) {
+      if (calculteDate(convo.createdAt) <= moment().format()) {
+        let req = await Conversation.findByIdAndDelete(convo._id);
+      }
     }
   });
 });
@@ -107,7 +156,10 @@ agenda.define("delete old stories", async (job) => {
 (async function () {
   await agenda.start();
 
-  await agenda.every("1 hour", "delete old stories");
+  await agenda.every("1 hour", [
+    "delete old stories",
+    "delete old conversation",
+  ]);
 })();
 
 module.exports = {
