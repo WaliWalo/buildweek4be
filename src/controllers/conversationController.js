@@ -17,7 +17,7 @@ const getConversations = async (req, res, next) => {
   try {
     const conversation = await ConversationModel.find({
       participants: { $elemMatch: { $eq: req.params.userId } },
-    }).populate(["creator", "participants"]);
+    }).populate(["creator", "participants", "creator2"]);
     if (conversation) {
       res.send(conversation);
     } else {
