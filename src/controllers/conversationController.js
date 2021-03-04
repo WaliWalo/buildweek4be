@@ -36,7 +36,7 @@ const getMessages = async (req, res, next) => {
   try {
     const msgs = await MessageModel.find({
       convoId: req.params.convoId,
-    });
+    }).populate(["to", "sender"]);
     if (msgs) {
       res.send(msgs);
     } else {

@@ -9,6 +9,7 @@ const {
   getAllConvoByUserId,
   likeMessage,
 } = require("./util/socket");
+const MessageModel = require("./models/MessageModel");
 
 const createSocketServer = (server) => {
   const io = socketio(server);
@@ -71,7 +72,10 @@ const createSocketServer = (server) => {
           content,
           to,
         });
-        socket.broadcast.to(convoId).emit("sendMessage", newMessage);
+        const populateMessage = await MessageModel.findById(
+          newMessage._id
+        ).populate(["to", "sender"]);
+        socket.broadcast.to(convoId).emit("sendMessage", populateMessage);
         console.log(newMessage);
       } catch (error) {
         console.log(error);
