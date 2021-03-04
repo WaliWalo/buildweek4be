@@ -97,6 +97,7 @@ const getUserById = async (req, res, next) => {
 const followUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id);
+    const personYoureFollowing = await User.findById(req.params.userId);
     if (user) {
       const findFollower = user.following.filter(
         (follower) => follower.toString() === req.params.userId
@@ -105,6 +106,20 @@ const followUser = async (req, res, next) => {
       if (findFollower.length > 0) {
         const newFollowing = user.following.filter(
           (follower) => follower.toString() !== req.params.userId
+        );
+        const newFollower = personYoureFollowing.followers.filter(
+          (follower) => {
+            console.log(follower.toString() !== req.user._id.toString());
+            follower.toString() !== req.user._id;
+          }
+        );
+        console.log(newFollower);
+        await User.findByIdAndUpdate(
+          req.params.userId,
+          {
+            $set: { followers: newFollower },
+          },
+          { runValidators: true, new: true }
         );
         await User.findByIdAndUpdate(
           req.user._id,
@@ -117,8 +132,6 @@ const followUser = async (req, res, next) => {
         );
         res.status(200).send("Follower removed");
       } else {
-        console.log(user.following);
-        console.log(mongoose.Types.ObjectId(req.params.userId));
         let userId = mongoose.Types.ObjectId(req.params.userId);
         await User.findByIdAndUpdate(
           req.user._id,
@@ -126,6 +139,13 @@ const followUser = async (req, res, next) => {
             $push: {
               following: userId,
             },
+          },
+          { runValidators: true, new: true }
+        );
+        await User.findByIdAndUpdate(
+          userId,
+          {
+            $push: { followers: mongoose.Types.ObjectId(req.user._id) },
           },
           { runValidators: true, new: true }
         );

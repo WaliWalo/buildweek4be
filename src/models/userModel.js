@@ -18,6 +18,7 @@ const UserSchema = new Schema(
     },
     password: { type: String },
     following: [{ type: mongoose.ObjectId, ref: "User" }],
+    followers: [{ type: mongoose.ObjectId, ref: "User" }],
     googleId: String,
     refreshTokens: [{ type: String }],
     facebookId: String,
