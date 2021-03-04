@@ -57,13 +57,10 @@ passport.use(
       const newUser = {
         facebookId: profile.id,
 
-        
         firstName: profile.name.givenName,
 
-        
         username: profile.name.givenName,
 
-        
         lastName: profile.name.familyName,
         email: profile.emails[0].value,
         picture: profile.photos[0].value,
@@ -71,7 +68,7 @@ passport.use(
         picture: profile.photos[0].value,
       };
       try {
-        const user = await UserModel.findOne({ googleId: profile.id });
+        const user = await UserModel.findOne({ facebookId: profile.id });
 
         if (user) {
           const tokens = await authenticate(user);
