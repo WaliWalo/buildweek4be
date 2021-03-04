@@ -20,6 +20,7 @@ passport.use(
         firstName: profile.name.givenName,
         lastName: profile.name.familyName,
         email: profile.emails[0].value,
+        picture: profile.photos[0].value,
         password: "NA",
       };
       try {
@@ -48,14 +49,16 @@ passport.use(
       clientID: process.env.FACEBOOK_API_KEY,
       clientSecret: process.env.FACEBOOK_SECRET,
       callbackURL: process.env.FACEBOOK_CALLBACK,
-      profileFields: ["id", "displayName", "photos", "email"],
+      profileFields: ["id", "displayName", "photos", "email", "name"],
     },
     async (request, accessToken, refreshToken, profile, next) => {
+      console.log(profile);
       const newUser = {
         facebookId: profile.id,
-        firstName: profile.displayName,
+        firstName: profile.name.givenName,
         lastName: profile.name.familyName,
         email: profile.emails[0].value,
+        picture: profile.photos[0].value,
         password: "NA",
         picture: profile.photos[0].value,
       };
