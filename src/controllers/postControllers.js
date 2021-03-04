@@ -8,11 +8,11 @@ const getPosts = async (req, res, next) => {
     const posts = await PostModel.find().populate([
       {
         path: "user",
-        select: ["_id", "firstName", "lastName", "picture"],
+        select: ["_id", "firstName", "lastName", "picture", "username"],
       },
       {
         path: "likes",
-        select: ["_id", "firstName", "lastName", "picture"],
+        select: ["_id", "firstName", "lastName", "picture", "username"],
       },
     ]);
     res.status(200).send(posts);
@@ -24,7 +24,11 @@ const getPosts = async (req, res, next) => {
 
 const addNewPost = async (req, res, next) => {
   try {
-    const newPost = new PostModel(req.body);
+    const post = {
+      ...req.body,
+      user: req.user,
+    };
+    const newPost = new PostModel(post);
     const { _id } = await newPost.save();
     res.status(201).send(newPost);
   } catch (error) {
@@ -38,11 +42,11 @@ const getPostById = async (req, res, next) => {
     const post = await PostModel.findById(req.params.postId).populate([
       {
         path: "user",
-        select: ["_id", "firstName", "lastName", "picture"],
+        select: ["_id", "firstName", "lastName", "picture", "username"],
       },
       {
         path: "likes",
-        select: ["_id", "firstName", "lastName", "picture"],
+        select: ["_id", "firstName", "lastName", "picture", "username"],
       },
     ]);
     if (post) {
@@ -126,6 +130,8 @@ const cloudMulter = multer({ storage: cloudStorage });
 const postPicture = async (req, res, next) => {
   try {
     let fileArray = [];
+
+    console.log(req.files);
 
     for (let i = 0; i < req.files.length; i++) {
       fileArray.push(req.files[i].path);
