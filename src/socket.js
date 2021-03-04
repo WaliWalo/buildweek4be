@@ -40,6 +40,7 @@ const createSocketServer = (server) => {
           // participants.forEach((participant) => {
           //   // sockets[participant].join(room);
           // });
+          socket.emit("createConvo", newConvo);
 
           console.log(newConvo);
         } catch (error) {
@@ -117,7 +118,12 @@ const createSocketServer = (server) => {
         console.log(error);
       }
     });
+    socket.on("disconnect", function () {
+      // handle disconnect
+      socket.disconnect();
+    });
   });
+  // io.close();
 };
 
 module.exports = createSocketServer;
