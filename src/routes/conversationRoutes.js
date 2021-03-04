@@ -8,9 +8,9 @@ const {
 
 const routes = (app) => {
   // GET CONVERSATIONS BY USER ID
-  app.route("/conversation/:userId").get(authorize, getConversations);
+  app.route("/conversation/:userId").get(getConversations);
   // GET CONVERSATION BY CONVO ID
-  app.route("/messages/getMessage/:convoId").get(authorize, getMessages);
+  app.route("/messages/getMessage/:convoId").get(getMessages);
   // user use this endpoint to get image url, return url to client
   // (then emit with the url to store image=>this is from front end)
   app

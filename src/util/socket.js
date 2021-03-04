@@ -7,7 +7,7 @@ const User = mongoose.model("User", UserSchema);
 const createConversation = async (participants) => {
   try {
     //CREATE A CONVERSATION BETWEEN PARTICIPANTS
-    console.log(participants.participants);
+    console.log(participants);
     const uniqueParticipants = [...new Set(participants.participants)];
     if (uniqueParticipants.length > 1) {
       //its a group convo
@@ -56,15 +56,31 @@ const createConversation = async (participants) => {
 const createMessage = async (messageObject) => {
   try {
     //CREATE MESSAGE
-    const { convoId, sender, content, url } = messageObject;
-
+    console.log(messageObject);
+    const { convoId, sender, content, url, to } = messageObject;
     const selectedConvo = await ConversationModel.findById(convoId);
     if (selectedConvo) {
       const user = await User.findById(sender);
+      let findIfUserExistInConvo = null;
+      if (to !== undefined) {
+        findIfUserExistInConvo = await ConversationModel.find({
+          $or: [{ participants: to }, { participants: user._id }],
+        });
+      }
+
       if (user) {
-        const newConvo = new MessageModel(messageObject);
-        const saved = await newConvo.save();
-        return saved;
+        if (selectedConvo.participants.length === 2 && to === undefined) {
+          return { error: "'to' userid required" };
+        } else if (
+          findIfUserExistInConvo &&
+          findIfUserExistInConvo.length === 0
+        ) {
+          return { error: "user not found in convo" };
+        } else {
+          const newConvo = new MessageModel(messageObject);
+          const saved = await newConvo.save();
+          return saved;
+        }
       } else {
         return { error: "user not found" };
       }
@@ -161,6 +177,26 @@ const getAllConvoByUserId = async (userId) => {
   }
 };
 
+const likeMessage = async (msgId, userId) => {
+  try {
+    const message = await MessageModel.findById(msgId);
+    const findLiked = message.like.filter((l) => l.toString() === userId);
+    if (findLiked.length > 0) {
+      const newLiked = message.like.filter((l) => l.toString() !== userId);
+      console.log(newLiked);
+      await MessageModel.findByIdAndUpdate(msgId, {
+        $set: { like: newLiked },
+      });
+      return { msg: `${userId} removed like` };
+    } else {
+      await MessageModel.findByIdAndUpdate(msgId, { $push: { like: userId } });
+      return { msg: `${userId} liked this message` };
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 module.exports = {
   createConversation,
   createMessage,
@@ -169,4 +205,5 @@ module.exports = {
   removeParticipantFromConvo,
   getUsersInConvo,
   getAllConvoByUserId,
+  likeMessage,
 };

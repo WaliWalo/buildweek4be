@@ -18,6 +18,7 @@ passport.use(
       const newUser = {
         googleId: profile.id,
         firstName: profile.name.givenName,
+        username: profile.name.givenName,
         lastName: profile.name.familyName,
         email: profile.emails[0].value,
         picture: profile.photos[0].value,
@@ -55,7 +56,14 @@ passport.use(
       console.log(profile);
       const newUser = {
         facebookId: profile.id,
+
+        
         firstName: profile.name.givenName,
+
+        
+        username: profile.name.givenName,
+
+        
         lastName: profile.name.familyName,
         email: profile.emails[0].value,
         picture: profile.photos[0].value,

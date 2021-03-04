@@ -5,6 +5,7 @@ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const { getVideoDurationInSeconds } = require("get-video-duration");
 const moment = require("moment");
 const Agenda = require("agenda");
+const Conversation = require("../models/ConversationModel");
 
 const agenda = new Agenda({
   db: {
@@ -102,13 +103,14 @@ const deleteStory = async (req, res, next) => {
   }
 };
 
+const calculteDate = (createdAt) => {
+  let date = moment(createdAt).add(24, "hours").format();
+  // date.replace("Moment<", "");
+  return date;
+};
+
 agenda.define("delete old stories", async (job) => {
   //"86400000"
-  const calculteDate = (createdAt) => {
-    let date = moment(createdAt).add(24, "hours").format();
-    // date.replace("Moment<", "");
-    return date;
-  };
 
   const stories = await StoryModel.find();
 
@@ -139,10 +141,25 @@ agenda.define("delete old stories", async (job) => {
   });
 });
 
+agenda.define("delete old conversation", async () => {
+  const conversations = await Conversation.find();
+
+  conversations.forEach(async (convo) => {
+    if (convo.oneDay) {
+      if (calculteDate(convo.createdAt) <= moment().format()) {
+        let req = await Conversation.findByIdAndDelete(convo._id);
+      }
+    }
+  });
+});
+
 (async function () {
   await agenda.start();
 
-  await agenda.every("1 hour", "delete old stories");
+  await agenda.every("1 hour", [
+    "delete old stories",
+    "delete old conversation",
+  ]);
 })();
 
 module.exports = {
