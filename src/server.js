@@ -15,6 +15,7 @@ const http = require("http");
 const createSocketServer = require("./socket");
 const {
   notFoundHandler,
+  notAuthorizedHandler,
   forbiddenHandler,
   badRequestHandler,
   genericErrorHandler,
@@ -51,6 +52,7 @@ storyRoutes(server);
 // ERROR HANDLERS MIDDLEWARES
 
 server.use(badRequestHandler);
+server.use(notAuthorizedHandler);
 server.use(forbiddenHandler);
 server.use(notFoundHandler);
 server.use(genericErrorHandler);

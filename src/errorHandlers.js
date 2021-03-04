@@ -6,6 +6,13 @@ const badRequestHandler = (err, req, res, next) => {
   next(err);
 }; // 400
 
+const notAuthorizedHandler = (err, req, res, next) => {
+  if (err.httpStatusCode === 401) {
+    res.status(401).send(err);
+  }
+  next(err);
+};
+
 const forbiddenHandler = (err, req, res, next) => {
   if (err.httpStatusCode === 403) {
     res.status(403).send(err);
@@ -30,6 +37,7 @@ const genericErrorHandler = (err, req, res, next) => {
 
 module.exports = {
   badRequestHandler,
+  notAuthorizedHandler,
   forbiddenHandler,
   notFoundHandler,
   genericErrorHandler,

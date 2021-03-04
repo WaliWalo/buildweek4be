@@ -25,7 +25,7 @@ const authorize = async (req, res, next) => {
   } catch (e) {
     console.log(e);
     const err = new Error({ error: "Please authenticate" });
-    err.httpStatusCode = 403;
+    err.httpStatusCode = 401;
     next(err);
   }
 };
