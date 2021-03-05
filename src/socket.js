@@ -114,10 +114,11 @@ const createSocketServer = (server) => {
       }
     });
 
-    socket.on("likeMessage", async ({ msgId, userId }) => {
+    socket.on("likeMessage", async ({ convoId, msgId, userId }) => {
       try {
         const likedMessage = await likeMessage(msgId, userId);
         console.log(likedMessage);
+        socket.broadcast.to(convoId).emit("likeMessage", likedMessage);
       } catch (error) {
         console.log(error);
       }
