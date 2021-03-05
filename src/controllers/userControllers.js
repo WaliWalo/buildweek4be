@@ -7,10 +7,16 @@ const cloudinary = require("./cloudinaryConfig");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
 const getUsers = async (req, res, next) => {
-  const user = await User.find({}).populate({
-    path: "following",
-    select: ["_id", "firstName", "lastName", "username", "picture"],
-  });
+  const user = await User.find({}).populate([
+    {
+      path: "following",
+      select: ["_id", "firstName", "lastName", "username", "picture"],
+    },
+    {
+      path: "followers",
+      select: ["_id", "firstName", "lastName", "username", "picture"],
+    },
+  ]);
   if (user.length !== 0) {
     res.status(200).send(user);
   } else {
@@ -69,9 +75,19 @@ const postProfilePic = async (req, res, next) => {
   }
 };
 
-const getUser = (req, res, next) => {
+const getUser = async (req, res, next) => {
   try {
-    res.send(req.user);
+    const userMe = await User.findById(req.user._id).populate([
+      {
+        path: "following",
+        select: ["_id", "firstName", "lastName", "username", "picture"],
+      },
+      {
+        path: "followers",
+        select: ["_id", "firstName", "lastName", "username", "picture"],
+      },
+    ]);
+    res.send(userMe);
   } catch (error) {
     error = new Error();
     error.httpStatusCode = 404;
@@ -81,7 +97,16 @@ const getUser = (req, res, next) => {
 
 const getUserById = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.userId);
+    const user = await User.findById(req.params.userId).populate([
+      {
+        path: "following",
+        select: ["_id", "firstName", "lastName", "username", "picture"],
+      },
+      {
+        path: "followers",
+        select: ["_id", "firstName", "lastName", "username", "picture"],
+      },
+    ]);
     if (user) {
       res.status(200).send(user);
     } else {
