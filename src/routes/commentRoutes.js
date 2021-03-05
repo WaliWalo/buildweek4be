@@ -10,17 +10,20 @@ const {
 const { authorize } = require("../controllers/authMiddleware");
 
 const routes = (app) => {
-  app.route("/comments").post(addNewComment).get(getComments);
+  app
+    .route("/comments")
+    .post(authorize, addNewComment)
+    .get(authorize, getComments);
 
   app
     .route("/comments/:commentId")
-    .get(getCommentById)
-    .put(updateComment)
-    .delete(deleteComment);
+    .get(authorize, getCommentById)
+    .put(authorize, updateComment)
+    .delete(authorize, deleteComment);
 
-  app.route("/comments/more/:commentId").get(getMoreComments);
+  app.route("/comments/more/:commentId").get(authorize, getMoreComments);
 
-  app.route("/comments/:commentId/:userId").post(addRemoveLike);
+  app.route("/comments/:commentId/:userId").post(authorize, addRemoveLike);
 };
 
 module.exports = routes;
