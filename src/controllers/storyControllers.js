@@ -104,7 +104,7 @@ const deleteStory = async (req, res, next) => {
 };
 
 const calculteDate = (createdAt) => {
-  let date = moment(createdAt).add(24, "hours").format();
+  let date = moment(createdAt).add(5, "s").format();
   // date.replace("Moment<", "");
   return date;
 };
@@ -113,7 +113,6 @@ agenda.define("delete old stories", async (job) => {
   //"86400000"
 
   const stories = await StoryModel.find();
-
   let req;
   stories.forEach(async (element) => {
     if (calculteDate(element.createdAt) <= moment().format()) {
@@ -156,7 +155,7 @@ agenda.define("delete old conversation", async () => {
 (async function () {
   await agenda.start();
 
-  await agenda.every("1 hour", [
+  await agenda.every("5 seconds", [
     "delete old stories",
     "delete old conversation",
   ]);
