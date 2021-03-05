@@ -36,10 +36,16 @@ const getMoreComments = async (req, res, next) => {
   try {
     const moreComments = await Comment.find({
       subcomment: req.params.commentId,
-    }).populate({
-      path: "userId",
-      select: ["firstName", "lastName", "picture"],
-    });
+    }).populate([
+      {
+        path: "userId",
+        select: ["firstName", "lastName", "picture", "username"],
+      },
+      {
+        path: "likes",
+        select: ["firstName", "lastName", "picture", "username"],
+      },
+    ]);
 
     res.status(200).send(moreComments);
   } catch (err) {
@@ -50,10 +56,16 @@ const getMoreComments = async (req, res, next) => {
 //GET all of the comments (regardless if parent/children)
 const getComments = async (req, res, next) => {
   try {
-    const comments = await Comment.find().populate({
-      path: "userId",
-      select: ["firstName", "lastName", "picture"],
-    });
+    const comments = await Comment.find().populate([
+      {
+        path: "userId",
+        select: ["firstName", "lastName", "picture", "username"],
+      },
+      {
+        path: "likes",
+        select: ["firstName", "lastName", "picture", "username"],
+      },
+    ]);
     res.send(comments);
   } catch (error) {
     console.log(error);
@@ -63,10 +75,16 @@ const getComments = async (req, res, next) => {
 
 //GET specific comment by Id regardless if parent/children
 const getCommentById = async (req, res, next) => {
-  const comment = await Comment.findById(req.params.commentId).populate({
-    path: "userId",
-    select: ["firstName", "lastName", "picture"],
-  });
+  const comment = await Comment.findById(req.params.commentId).populate([
+    {
+      path: "userId",
+      select: ["firstName", "lastName", "picture", "username"],
+    },
+    {
+      path: "likes",
+      select: ["firstName", "lastName", "picture", "username"],
+    },
+  ]);
   console.log(comment);
   res.status(200).send(comment);
 };
@@ -74,7 +92,7 @@ const getCommentById = async (req, res, next) => {
 //POST add new comment
 const addNewComment = async (req, res, next) => {
   try {
-    const newComment = new Comment(req.body);
+    const newComment = new Comment({ ...req.body, userId: req.user });
     const { _id } = await newComment.save();
     res.status(201).send(newComment);
   } catch (error) {
