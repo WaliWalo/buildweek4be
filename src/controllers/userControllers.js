@@ -35,9 +35,13 @@ const addNewUser = async (req, res, next) => {
     res.cookie("refreshToken", token.refreshToken, {
       httpOnly: true,
       path: "/refreshToken",
+      sameSite: none,
+      secure: true,
     });
     res.status(201).cookie("accessToken", token.token, {
       httpOnly: true,
+      sameSite: none,
+      secure: true,
     });
 
     res.status(201).send(user);
@@ -224,11 +228,15 @@ const login = async (req, res, next) => {
       res.cookie("refreshToken", token.refreshToken, {
         httpOnly: true,
         path: "/refreshToken",
+        sameSite: none,
+        secure: true,
       });
       res
         .status(201)
         .cookie("accessToken", token.token, {
           httpOnly: true,
+          sameSite: none,
+          secure: true,
         })
         .send({ status: "ok" });
       // res.status(200).redirect(process.env.FE_URL);
@@ -267,10 +275,14 @@ const refreshToken = async (req, res, next) => {
     // send them back
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
+      sameSite: none,
+      secure: true,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       path: "/refreshToken",
+      sameSite: none,
+      secure: true,
     });
     res.send("tokens are refreshed");
   } catch (error) {
@@ -282,10 +294,14 @@ const googleAuthenticate = async (req, res, next) => {
   try {
     res.cookie("accessToken", req.user.tokens.token, {
       httpOnly: true,
+      sameSite: none,
+      secure: true,
     });
     res.cookie("refreshToken", req.user.tokens.refreshToken, {
       httpOnly: true,
       path: "/refreshToken",
+      sameSite: none,
+      secure: true,
     });
 
     res.status(200).redirect(process.env.FE_URL + "/home");
@@ -298,10 +314,14 @@ const facebookAuthenticate = async (req, res, next) => {
   try {
     res.cookie("accessToken", req.user.tokens.token, {
       httpOnly: true,
+      sameSite: none,
+      secure: true,
     });
     res.cookie("refreshToken", req.user.tokens.refreshToken, {
       httpOnly: true,
       path: "/refreshToken",
+      sameSite: none,
+      secure: true,
     });
 
     res.status(200).redirect(process.env.FE_URL + "/home");

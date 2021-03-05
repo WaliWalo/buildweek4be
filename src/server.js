@@ -22,6 +22,8 @@ const {
 } = require("./errorHandlers");
 
 const server = express();
+server.set("trust proxy", 1);
+server.enable("trust proxy");
 const httpServer = http.createServer(server);
 createSocketServer(httpServer);
 const whitelist = [`${process.env.FE_URL}`];
@@ -35,7 +37,7 @@ const corsOptions = {
   },
   credentials: true, //to allow cookies
 };
-const port = process.env.PORT;
+const port = process.env.NODE_ENV;
 server.use(cors(corsOptions));
 // const staticFolderPath = join(__dirname, "../public");
 // server.use(express.static(staticFolderPath));
