@@ -65,7 +65,7 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(
-    httpServer.listen(port, () => {
+    httpServer.listen(port || 5000, () => {
       console.log("Running on port", port);
     })
   )
