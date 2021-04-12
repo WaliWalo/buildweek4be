@@ -35,7 +35,7 @@ const corsOptions = {
   },
   credentials: true, //to allow cookies
 };
-const port = process.env.REACT_APP_PORT;
+const port = process.env.PORT;
 server.use(cors(corsOptions));
 // const staticFolderPath = join(__dirname, "../public");
 // server.use(express.static(staticFolderPath));
