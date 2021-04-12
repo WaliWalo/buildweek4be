@@ -9,7 +9,7 @@ const {
   getAllConvoByUserId,
   likeMessage,
 } = require("./util/socket");
-const MessageModel = require("./models/MessageModel");
+const MessageModel = require("./models/messageModel");
 
 const createSocketServer = (server) => {
   const io = socketio(server);

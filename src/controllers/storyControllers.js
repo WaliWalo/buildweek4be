@@ -5,7 +5,7 @@ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const { getVideoDurationInSeconds } = require("get-video-duration");
 const moment = require("moment");
 const Agenda = require("agenda");
-const Conversation = require("../models/ConversationModel");
+const Conversation = require("../models/conversationModel");
 
 const agenda = new Agenda({
   db: {

@@ -1,5 +1,5 @@
-const ConversationModel = require("../models/ConversationModel");
-const MessageModel = require("../models/MessageModel");
+const ConversationModel = require("../models/conversationModel");
+const MessageModel = require("../models/messageModel");
 const multer = require("multer");
 const cloudinary = require("./cloudinaryConfig");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");

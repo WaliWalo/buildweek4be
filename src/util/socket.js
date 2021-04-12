@@ -1,5 +1,5 @@
-const MessageModel = require("../models/MessageModel");
-const ConversationModel = require("../models/ConversationModel");
+const MessageModel = require("../models/messageModel");
+const ConversationModel = require("../models/conversationModel");
 const mongoose = require("mongoose");
 const UserSchema = require("../models/userModel");
 const User = mongoose.model("User", UserSchema);
