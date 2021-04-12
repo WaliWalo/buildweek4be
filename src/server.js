@@ -22,6 +22,8 @@ const {
 } = require("./errorHandlers");
 
 const server = express();
+server.set("trust proxy", 1);
+server.enable("trust proxy");
 const httpServer = http.createServer(server);
 createSocketServer(httpServer);
 const whitelist = [`${process.env.REACT_APP_FE_URL}`];

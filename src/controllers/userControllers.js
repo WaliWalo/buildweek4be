@@ -33,10 +33,14 @@ const addNewUser = async (req, res, next) => {
     console.log("test", user);
 
     res.cookie("refreshToken", token.refreshToken, {
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
       path: "/refreshToken",
     });
     res.status(201).cookie("accessToken", token.token, {
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
     });
 
@@ -222,12 +226,16 @@ const login = async (req, res, next) => {
     } else {
       const token = await authenticate(user);
       res.cookie("refreshToken", token.refreshToken, {
+        secure: true,
+        sameSite: "none",
         httpOnly: true,
         path: "/refreshToken",
       });
       res
         .status(201)
         .cookie("accessToken", token.token, {
+          secure: true,
+          sameSite: "none",
           httpOnly: true,
         })
         .send({ status: "ok" });
@@ -266,9 +274,13 @@ const refreshToken = async (req, res, next) => {
 
     // send them back
     res.cookie("accessToken", accessToken, {
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
     });
     res.cookie("refreshToken", refreshToken, {
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
       path: "/refreshToken",
     });
@@ -281,9 +293,13 @@ const refreshToken = async (req, res, next) => {
 const googleAuthenticate = async (req, res, next) => {
   try {
     res.cookie("accessToken", req.user.tokens.token, {
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
     });
     res.cookie("refreshToken", req.user.tokens.refreshToken, {
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
       path: "/refreshToken",
     });
@@ -297,9 +313,13 @@ const googleAuthenticate = async (req, res, next) => {
 const facebookAuthenticate = async (req, res, next) => {
   try {
     res.cookie("accessToken", req.user.tokens.token, {
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
     });
     res.cookie("refreshToken", req.user.tokens.refreshToken, {
+      secure: true,
+      sameSite: "none",
       httpOnly: true,
       path: "/refreshToken",
     });
