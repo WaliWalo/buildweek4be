@@ -288,7 +288,7 @@ const googleAuthenticate = async (req, res, next) => {
       path: "/refreshToken",
     });
 
-    res.status(200).redirect(process.env.FE_URL + "/home");
+    res.status(200).redirect(process.env.REACT_APP_FE_URL + "/home");
   } catch (error) {
     next(error);
   }
@@ -304,7 +304,7 @@ const facebookAuthenticate = async (req, res, next) => {
       path: "/refreshToken",
     });
 
-    res.status(200).redirect(process.env.FE_URL + "/home");
+    res.status(200).redirect(process.env.REACT_APP_FE_URL + "/home");
   } catch (error) {
     next(error);
   }

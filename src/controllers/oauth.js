@@ -10,9 +10,9 @@ passport.use(
   "google",
   new GoogleStrategy(
     {
-      clientID: process.env.GOOGLE_ID,
-      clientSecret: process.env.GOOGLE_SECRET,
-      callbackURL: process.env.CALLBACK_URL,
+      clientID: process.env.REACT_APP_GOOGLE_ID,
+      clientSecret: process.env.REACT_APP_GOOGLE_SECRET,
+      callbackURL: process.env.REACT_APP_CALLBACK_URL,
     },
     async (request, accessToken, refreshToken, profile, next) => {
       const newUser = {
@@ -47,9 +47,9 @@ passport.use(
   "facebook",
   new FacebookStrategy(
     {
-      clientID: process.env.FACEBOOK_API_KEY,
-      clientSecret: process.env.FACEBOOK_SECRET,
-      callbackURL: process.env.FACEBOOK_CALLBACK,
+      clientID: process.env.REACT_APP_FACEBOOK_API_KEY,
+      clientSecret: process.env.REACT_APP_FACEBOOK_SECRET,
+      callbackURL: process.env.REACT_APP_FACEBOOK_CALLBACK,
       profileFields: ["id", "displayName", "photos", "email", "name"],
     },
     async (request, accessToken, refreshToken, profile, next) => {

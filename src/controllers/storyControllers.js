@@ -9,7 +9,7 @@ const Conversation = require("../models/conversationModel");
 
 const agenda = new Agenda({
   db: {
-    address: process.env.MONGO_CONNECTION,
+    address: process.env.REACT_APP_MONGO_CONNECTION,
     options: { useUnifiedTopology: true },
   },
 });

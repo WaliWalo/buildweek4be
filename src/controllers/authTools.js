@@ -20,7 +20,7 @@ const generateJWT = (payload) =>
   new Promise((res, rej) =>
     jwt.sign(
       payload,
-      process.env.JWT_SECRET,
+      process.env.REACT_APP_JWT_SECRET,
       { expiresIn: "15m" },
       (err, token) => {
         if (err) rej(err);
@@ -31,7 +31,7 @@ const generateJWT = (payload) =>
 
 const verifyJWT = (token) =>
   new Promise((res, rej) =>
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+    jwt.verify(token, process.env.REACT_APP_JWT_SECRET, (err, decoded) => {
       if (err) {
         console.log(err);
         rej(err);
@@ -44,7 +44,7 @@ const generateRefreshToken = (payload) =>
   new Promise((res, rej) =>
     jwt.sign(
       payload,
-      process.env.REFRESH_TOKEN_SECRET,
+      process.env.REACT_APP_REFRESH_TOKEN_SECRET,
       { expiresIn: "1 week" },
       (err, token) => {
         if (err) rej(err);
@@ -55,10 +55,14 @@ const generateRefreshToken = (payload) =>
 
 const verifyRefreshToken = (token) =>
   new Promise((res, rej) =>
-    jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, (err, decoded) => {
-      if (err) rej(err);
-      res(decoded);
-    })
+    jwt.verify(
+      token,
+      process.env.REACT_APP_REFRESH_TOKEN_SECRET,
+      (err, decoded) => {
+        if (err) rej(err);
+        res(decoded);
+      }
+    )
   );
 
 const refresh = async (oldRefreshToken) => {

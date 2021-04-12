@@ -24,7 +24,7 @@ const {
 const server = express();
 const httpServer = http.createServer(server);
 createSocketServer(httpServer);
-const whitelist = [`${process.env.FE_URL}`];
+const whitelist = [`${process.env.REACT_APP_FE_URL}`];
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
@@ -35,7 +35,7 @@ const corsOptions = {
   },
   credentials: true, //to allow cookies
 };
-const port = process.env.PORT;
+const port = process.env.REACT_APP_PORT;
 server.use(cors(corsOptions));
 // const staticFolderPath = join(__dirname, "../public");
 // server.use(express.static(staticFolderPath));
@@ -60,7 +60,7 @@ server.use(genericErrorHandler);
 console.log(listEndpoints(server));
 
 mongoose
-  .connect(process.env.MONGO_CONNECTION, {
+  .connect(process.env.REACT_APP_MONGO_CONNECTION, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
